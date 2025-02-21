@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "create-spicetify-app": "^1.1.10",
     "spcr-settings": "^1.3.1"
   }
 }
