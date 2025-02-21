@@ -20,8 +20,8 @@ A [Spicetify](https://spicetify.app/) extension that dynamically sets your Govee
     "model": "[your device model here]",
     ```
     4. "device" is your device id. "model" is your model name. Keep these somewhere as you'll need these later.
-    > [!WARNING]
-    > Copying the quotes will result in the extension not being able to reach your device. Make sure to not copy the quotes. For example, your device ID should be XX:XX:XX:XX:XX:XX:XX:XX, not "XX:XX:XX:XX:XX:XX:XX:XX".
+> [!WARNING]
+> Copying the quotes will result in the extension not being able to reach your device. Make sure to not copy the quotes. For example, your device ID should be XX:XX:XX:XX:XX:XX:XX:XX, not "XX:XX:XX:XX:XX:XX:XX:XX".
 
 ## Setup Instructions
 
@@ -33,8 +33,8 @@ A [Spicetify](https://spicetify.app/) extension that dynamically sets your Govee
      - **Govee API Key**: Your Govee API Key. It should look something like XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
      - **Device model name**: The device model name you got from the website. It should look something like HXXXX.
      - **Device ID**: The device ID you got from the website. It should look something like XX:XX:XX:XX:XX:XX:XX:XX.
-    > [!WARNING]
-    > Not getting these values exactly right will result in the extension not being able to reach your device.
+> [!WARNING]
+> Not getting these values exactly right will result in the extension not being able to reach your device.
 
 ## Thanks to
 
