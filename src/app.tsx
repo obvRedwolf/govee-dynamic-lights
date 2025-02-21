@@ -147,8 +147,8 @@ async function handlePause(): Promise<void> {
 
 async function createSettings(): Promise<void> {
   // main section
-  const settings = new SettingsSection('Govee Lights settings', 'govee-lights');
-  settings.addToggle('on-off', 'Extention on/off', true);
+  const settings = new SettingsSection('Setup Govee Lights', 'govee-lights');
+  settings.addToggle('on-off', 'Extension on/off', true);
   settings.addInput('api-key', 'Govee API Key ', '');
   settings.addInput('model-name', 'Device model name', '');
   settings.addInput('mac-address', 'Device MAC Address', '');
