@@ -17,7 +17,7 @@ function getSetting<T>(key: string, defaultValue: T): T {
   }
 }
 
-async function sendGoveeRequest(apiKey: string, modelName: string, macAddress: string, capability: object): Promise<void> {
+async function sendGoveeRequest(apiKey: string, modelName: string, deviceID: string, capability: object): Promise<void> {
   const url = 'https://cors-proxy.spicetify.app/https://openapi.api.govee.com/router/api/v1/device/control';
   const headers = {
     'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ async function sendGoveeRequest(apiKey: string, modelName: string, macAddress: s
     'requestId': 'uuid',
     'payload': {
         'sku': modelName,
-        'device': macAddress,
+        'device': deviceID,
         'capability': capability,
     },
   };
@@ -41,9 +41,9 @@ async function sendGoveeRequest(apiKey: string, modelName: string, macAddress: s
   }
 }
 
-async function changeWIFIGoveeColor(apiKey: string, modelName: string, macAddress: string, color: string): Promise<void> {
+async function changeWIFIGoveeColor(apiKey: string, modelName: string, deviceID: string, color: string): Promise<void> {
   const rgbValue = hex_to_integer(color);
-  await sendGoveeRequest(apiKey, modelName, macAddress, {
+  await sendGoveeRequest(apiKey, modelName, deviceID, {
     'type': 'devices.capabilities.color_setting',
     'instance': 'colorRgb',
     'value': rgbValue
@@ -51,8 +51,8 @@ async function changeWIFIGoveeColor(apiKey: string, modelName: string, macAddres
   console.debug(`Set lights to ${color}`);
 }
 
-async function changeWIFIGoveeBrightness(apiKey: string, modelName: string, macAddress: string, brightness: number): Promise<void> {
-  await sendGoveeRequest(apiKey, modelName, macAddress, {
+async function changeWIFIGoveeBrightness(apiKey: string, modelName: string, deviceID: string, brightness: number): Promise<void> {
+  await sendGoveeRequest(apiKey, modelName, deviceID, {
     'type': 'devices.capabilities.range',
     'instance': 'brightness',
     'value': brightness
@@ -72,7 +72,7 @@ async function handlePlayOrChange(): Promise<void> {
   const onOff = getSetting<boolean>('govee-lights.on-off', false);
   const apiKey = getSetting<string>('govee-lights.api-key', '');
   const modelName = getSetting<string>('govee-lights.model-name', '');
-  const macAddress = getSetting<string>('govee-lights.mac-address', '');
+  const deviceID = getSetting<string>('govee-lights.device-id', '');
   const playingLights = getSetting<number>('darken-lights.normalBrightness', 100);
 
   if (!onOff) return;
@@ -85,8 +85,8 @@ async function handlePlayOrChange(): Promise<void> {
       await changeWIFIGoveeBrightness(
         apiKey,
         modelName,
-        macAddress,
-        playingLights
+        deviceID,
+        Number(playingLights)
       );
       currentBrightness = playingLights;
     };
@@ -104,7 +104,7 @@ async function handlePlayOrChange(): Promise<void> {
     await changeWIFIGoveeColor(
       apiKey,
       modelName,
-      macAddress,
+      deviceID,
       selectedColor
     );
     currentColor = selectedColor;
@@ -120,7 +120,7 @@ async function handlePause(): Promise<void> {
   const onOff = getSetting<boolean>('govee-lights.on-off', false);
   const apiKey = getSetting<string>('govee-lights.api-key', '');
   const modelName = getSetting<string>('govee-lights.model-name', '');
-  const macAddress = getSetting<string>('govee-lights.mac-address', '');
+  const deviceID = getSetting<string>('govee-lights.device-id', '');
   const pauseLights = getSetting<number>('darken-lights.darkenedBrightness', 75);
 
   if (!onOff) return;
@@ -133,8 +133,8 @@ async function handlePause(): Promise<void> {
     await changeWIFIGoveeBrightness(
       apiKey,
       modelName,
-      macAddress,
-      pauseLights
+      deviceID,
+      Number(pauseLights)
     );
     currentBrightness = pauseLights;
 
@@ -151,10 +151,10 @@ async function createSettings(): Promise<void> {
   settings.addToggle('on-off', 'Extension on/off', true);
   settings.addInput('api-key', 'Govee API Key ', '');
   settings.addInput('model-name', 'Device model name', '');
-  settings.addInput('mac-address', 'Device MAC Address', '');
+  settings.addInput('device-id', 'Device ID', '');
   await settings.pushSettings();
 
-  // pause section
+  // brightness section
   const darkenLightsSettings = new SettingsSection("Govee Brightness settings", "darken-lights");
   darkenLightsSettings.addToggle('darken-pause-lights', 'Darken lights when paused', true);
   darkenLightsSettings.addInput('normalBrightness', 'Playing brightness', '100');
