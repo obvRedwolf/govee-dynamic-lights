@@ -2721,6 +2721,7 @@
     } catch (e) {
       return defaultValue;
     }
+    ;
   }
   async function sendGoveeRequest(apiKey, modelName, deviceID, capability) {
     const url = "https://cors-proxy.spicetify.app/https://openapi.api.govee.com/router/api/v1/device/control";
@@ -2743,6 +2744,7 @@
       console.error("Error changing lights:", error);
       Spicetify.showNotification("Failed to change lights, please check your settings.", true);
     }
+    ;
   }
   async function changeWIFIGoveeColor(apiKey, modelName, deviceID, color) {
     const rgbValue = hex_to_integer(color);
@@ -2764,21 +2766,27 @@
   async function handlePlaybackChange(event) {
     if (!(event == null ? void 0 : event.data.isPaused)) {
       await handlePlayOrChange();
-    } else if (getSetting("darken-lights.darken-pause-lights", false)) {
+    } else if (getSetting("brightness-settings.darkenPauseLights", false)) {
       await handlePause();
     }
+    ;
   }
   async function handlePlayOrChange() {
-    const onOff = getSetting("govee-lights.on-off", false);
-    const apiKey = getSetting("govee-lights.api-key", "");
-    const modelName = getSetting("govee-lights.model-name", "");
-    const deviceID = getSetting("govee-lights.device-id", "");
-    const playingLights = getSetting("darken-lights.normalBrightness", 100);
-    if (!onOff)
-      return;
     try {
-      if (Number.isNaN(playingLights))
+      const onOff = getSetting("govee-lights.on-off", false);
+      const apiKey = getSetting("govee-lights.api-key", "");
+      const modelName = getSetting("govee-lights.model-name", "");
+      const deviceID = getSetting("govee-lights.device-id", "");
+      const playingLights = getSetting("brightness-settings.normalBrightness", 100);
+      const currentTrack = Spicetify.Player.data.item.uri;
+      if (!onOff) {
+        return;
+      }
+      ;
+      if (Number.isNaN(playingLights)) {
         throw new Error("Invalid brightness");
+      }
+      ;
       if (currentBrightness !== playingLights) {
         await changeWIFIGoveeBrightness(
           apiKey,
@@ -2789,13 +2797,16 @@
         currentBrightness = playingLights;
       }
       ;
-      const currentTrack = Spicetify.Player.data.item.uri;
-      if (currentTrack.startsWith("spotify:local:"))
+      if (currentTrack.startsWith("spotify:local:")) {
         return;
+      }
+      ;
       const colors = await Spicetify.colorExtractor(currentTrack);
       const selectedColor = colors.VIBRANT;
-      if (currentColor === selectedColor)
+      if (currentColor === selectedColor) {
         return;
+      }
+      ;
       await changeWIFIGoveeColor(
         apiKey,
         modelName,
@@ -2810,18 +2821,24 @@
     ;
   }
   async function handlePause() {
-    const onOff = getSetting("govee-lights.on-off", false);
-    const apiKey = getSetting("govee-lights.api-key", "");
-    const modelName = getSetting("govee-lights.model-name", "");
-    const deviceID = getSetting("govee-lights.device-id", "");
-    const pauseLights = getSetting("darken-lights.darkenedBrightness", 75);
-    if (!onOff)
-      return;
     try {
-      if (currentBrightness === pauseLights)
+      const onOff = getSetting("govee-lights.on-off", false);
+      const apiKey = getSetting("govee-lights.api-key", "");
+      const modelName = getSetting("govee-lights.model-name", "");
+      const deviceID = getSetting("govee-lights.device-id", "");
+      const pauseLights = getSetting("brightness-settings.pausedBrightness", 75);
+      if (!onOff) {
         return;
-      if (Number.isNaN(pauseLights))
+      }
+      ;
+      if (currentBrightness === pauseLights) {
+        return;
+      }
+      ;
+      if (Number.isNaN(pauseLights)) {
         throw new Error("Invalid brightness");
+      }
+      ;
       await changeWIFIGoveeBrightness(
         apiKey,
         modelName,
@@ -2842,11 +2859,11 @@
     settings.addInput("model-name", "Device model name", "");
     settings.addInput("device-id", "Device ID", "");
     await settings.pushSettings();
-    const darkenLightsSettings = new SettingsSection("Govee Brightness settings", "darken-lights");
-    darkenLightsSettings.addToggle("darken-pause-lights", "Darken lights when paused", true);
-    darkenLightsSettings.addInput("normalBrightness", "Playing brightness", "100");
-    darkenLightsSettings.addInput("darkenedBrightness", "Paused brightness", "75");
-    await darkenLightsSettings.pushSettings();
+    const brightnessSettings = new SettingsSection("Govee Brightness settings", "brightness-settings");
+    brightnessSettings.addToggle("darkenPauseLights", "Darken lights when paused", true);
+    brightnessSettings.addInput("normalBrightness", "Playing brightness", "100");
+    brightnessSettings.addInput("pausedBrightness", "Paused brightness", "75");
+    await brightnessSettings.pushSettings();
   }
   async function main() {
     createSettings();
@@ -2855,7 +2872,7 @@
   }
   var app_default = main;
 
-  // ../../../../tmp/spicetify-creator/index.jsx
+  // ../../../AppData/Local/Temp/spicetify-creator/index.jsx
   (async () => {
     await app_default();
   })();
