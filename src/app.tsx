@@ -78,7 +78,7 @@ async function handlePlayOrChange(): Promise<void> {
     const modelName = getSetting<string>('govee-lights.model-name', '');
     const deviceID = getSetting<string>('govee-lights.device-id', '');
     const playingLights = getSetting<number>('brightness-settings.normalBrightness', 100);
-    const currentTrack = Spicetify.Player.data.item.uri;
+    const currentTrack = Spicetify.Player.data.item;
 
     if (!onOff) {
       return;
@@ -98,25 +98,35 @@ async function handlePlayOrChange(): Promise<void> {
       currentBrightness = playingLights;
     };
 
-    if (currentTrack.startsWith('spotify:local:')) {
+    if (currentTrack.uri.startsWith('spotify:local:')) {
       return; // skip if local
     };
 
-    const colors = await Spicetify.colorExtractor(currentTrack);
-    const selectedColor = colors.VIBRANT;
+    const imageUri = currentTrack?.metadata?.image_url
 
-    if (currentColor === selectedColor) {
+    if (!imageUri) {
+      console.warn("No image URI found for current track.");
       return;
-    };
+    }
 
-    await changeWIFIGoveeColor(
-      apiKey,
-      modelName,
-      deviceID,
-      selectedColor
-    );
+    const presets = await Spicetify.extractColorPreset(imageUri);
+
+    if (!presets || presets.length === 0) {
+      console.warn("No color presets extracted.");
+      return;
+    }
+
+    const rgb = presets[0].colorRaw.rgb;
+    const selectedColor = `#${((1 << 24) + (rgb.r << 16) + (rgb.g << 8) + rgb.b)
+      .toString(16)
+      .slice(1)}`;
+
+    // Skip redundant updates
+    if (currentColor === selectedColor) return;
+
+    // Apply to Govee lights
+    await changeWIFIGoveeColor(apiKey, modelName, deviceID, selectedColor);
     currentColor = selectedColor;
-
   }
   catch (error) {
     console.error('Error changing lights:', error);
