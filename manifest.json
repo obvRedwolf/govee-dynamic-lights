@@ -1,7 +1,7 @@
 [
   {
     "name": "Govee Dynamic Lights",
-    "description": "Extension that syncs your Govee lights to your current album cover..",
+    "description": "Extension that syncs your Govee lights to your current album cover.",
     "preview": "img/showcase.gif",
     "main": "govee-dynamic-lights.js",
     "readme": "README.md",
